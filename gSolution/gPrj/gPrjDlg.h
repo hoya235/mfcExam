@@ -15,6 +15,7 @@ public:
 
 private:
 	CDlgImage* m_pDlgImage;
+	CDlgImage* m_pDlgImgResult;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -37,9 +38,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnBnClickedBtnDlg();
 	afx_msg void OnDestroy();
 
 public:
 	void callFunc(int n);
+	afx_msg void OnBnClickedBtnTest();
 };
