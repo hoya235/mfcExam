@@ -1,0 +1,5 @@
+*.aps
+*.filters
+*.VC.*
+x64/
+ipch/
