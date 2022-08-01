@@ -188,19 +188,21 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	int nPitch = img.GetPitch();
 	unsigned char* fm = (unsigned char*)img.GetBits();
 
-	memset(fm, 0xff, nHeight*nWidth);
+	memset(fm, 0, nHeight*nWidth);
 	
-	for (int k = 0; k < 100; k++) {
+	for (int k = 0; k < MAX_POINT; k++) {
 		int x = rand() % nWidth;
 		int y = rand() % nHeight;
-		fm[y * nPitch + x] = 0;
+		fm[y * nPitch + x] = rand()%255;
 	}
 
 	int index = 0;
+	int nTh = 100;
 	for (int j = 0; j < nHeight; j++) {
 		for (int i = 0; i < nWidth; i++) {
-			if (fm[j*nPitch + i] == 0) {
-				if (index < 100) {					
+			if (fm[j*nPitch + i] > nTh) {
+				if (index < MAX_POINT) {
+					//cout << index << " " << i << ":" << j << endl;
 					m_pDlgImgResult->m_ptData[index].x = i;
 					m_pDlgImgResult->m_ptData[index].y = j;
 					m_pDlgImgResult->m_nDataCount = ++index;

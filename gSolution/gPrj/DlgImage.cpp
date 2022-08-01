@@ -92,7 +92,7 @@ void CDlgImage::DrawData(CDC& dc)
 {
 	CRect rect;
 	CPen  pen;	
-	pen.CreatePen(PS_SOLID, 5, RGB(0xff, 0, 0));
+	pen.CreatePen(PS_SOLID, 5, COR_GREEN);
 	CPen* pOldPen = dc.SelectObject(&pen);
 	
 	for (int i = 0; i < m_nDataCount; i++) {
