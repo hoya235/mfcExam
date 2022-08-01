@@ -170,8 +170,8 @@ void CgPrjDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	delete m_pDlgImage;
-	delete m_pDlgImgResult;
+	if (m_pDlgImage) delete m_pDlgImage;
+	if (m_pDlgImgResult) delete m_pDlgImgResult;
 }
 
 void CgPrjDlg::callFunc(int n)
@@ -187,6 +187,8 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	int nHeight = img.GetHeight();
 	int nPitch = img.GetPitch();
 	unsigned char* fm = (unsigned char*)img.GetBits();
+
+	memset(fm, 0xff, nHeight*nWidth);
 	
 	for (int k = 0; k < 100; k++) {
 		int x = rand() % nWidth;
@@ -194,13 +196,19 @@ void CgPrjDlg::OnBnClickedBtnTest()
 		fm[y * nPitch + x] = 0;
 	}
 
-	int sum = 0;
+	int index = 0;
 	for (int j = 0; j < nHeight; j++) {
 		for (int i = 0; i < nWidth; i++) {
-			if (fm[j*nPitch + i] == 0)
-				cout << ++sum << " : (" << i << "," << j << ")" << endl;
+			if (fm[j*nPitch + i] == 0) {
+				if (index < 100) {					
+					m_pDlgImgResult->m_ptData[index].x = i;
+					m_pDlgImgResult->m_ptData[index].y = j;
+					m_pDlgImgResult->m_nDataCount = ++index;
+				}
+			}
 		}
 	}
 
 	m_pDlgImage->Invalidate();
+	m_pDlgImgResult->Invalidate();
 }
