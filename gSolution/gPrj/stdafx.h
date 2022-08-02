@@ -35,6 +35,7 @@
 
 
 #include <iostream>
+#include <afx.h>
 
 #define COR_RED   RGB(0xFF, 0x00, 0x00)
 #define COR_GREEN RGB(0x00, 0xFF, 0x00)

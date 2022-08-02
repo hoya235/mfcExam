@@ -38,8 +38,8 @@ END_MESSAGE_MAP()
 
 void  CDlgImage::InitImage()
 {
-	int nWidth = 640;
-	int nHeight = 480;
+	int nWidth = 4096 * 5; // 4k 라인스캐너 카메라가 5대 있다는 의미
+	int nHeight = 4096 * 5;
 	int nBpp = 8;
 
 	m_image.Create(nWidth, -nHeight, nBpp);
@@ -92,12 +92,12 @@ void CDlgImage::DrawData(CDC& dc)
 {
 	CRect rect;
 	CPen  pen;	
-	pen.CreatePen(PS_SOLID, 5, COR_GREEN);
+	pen.CreatePen(PS_SOLID, 2, COR_RED);
 	CPen* pOldPen = dc.SelectObject(&pen);
 	
 	for (int i = 0; i < m_nDataCount; i++) {
 		rect.SetRect(m_ptData[i], m_ptData[i]);
-		rect.InflateRect(2, 2);
+		rect.InflateRect(1, 1);
 		dc.Ellipse(rect);
 	}
 	

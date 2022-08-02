@@ -6,6 +6,9 @@
 #include "gPrj.h"
 #include "gPrjDlg.h"
 #include "afxdialogex.h"
+#include "Process.h"
+
+#include <chrono>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,6 +71,9 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BTN_TEST, &CgPrjDlg::OnBnClickedBtnTest)
+	ON_BN_CLICKED(IDC_BTN_PROCESS, &CgPrjDlg::OnBnClickedBtnProcess)
+	ON_BN_CLICKED(IDC_BTN_MAKE_PATTEN, &CgPrjDlg::OnBnClickedBtnMakePatten)
+	ON_BN_CLICKED(IDC_BTN_GET_DATA, &CgPrjDlg::OnBnClickedBtnGetData)
 END_MESSAGE_MAP()
 
 
@@ -213,4 +219,69 @@ void CgPrjDlg::OnBnClickedBtnTest()
 
 	m_pDlgImage->Invalidate();
 	m_pDlgImgResult->Invalidate();
+}
+
+
+void CgPrjDlg::OnBnClickedBtnProcess()
+{
+	CProcess ps;
+
+	auto start = chrono::system_clock::now();	
+	int ret = ps.getStartInfo(m_pDlgImage->m_image, 100);
+	auto end = chrono::system_clock::now();
+	auto msec = chrono::duration_cast<chrono::milliseconds>(end - start);
+	cout << ret << "\t" << msec.count() << "ms" << endl;	
+}
+
+
+void CgPrjDlg::OnBnClickedBtnMakePatten()
+{
+	CImage& img = m_pDlgImage->m_image;
+
+	int nWidth = img.GetWidth();
+	int nHeight = img.GetHeight();
+	int nPitch = img.GetPitch();
+	unsigned char* fm = (unsigned char*)img.GetBits();
+
+	memset(fm, 0, nHeight*nWidth);
+
+	CRect rect(100, 100, 200, 200);
+	for (int j = rect.top; j < rect.bottom; j++) {
+		for (int i = rect.left; i < rect.right; i++) {
+			fm[j * nPitch + i] = rand() % 0xff;
+		}
+	}
+
+	m_pDlgImage->Invalidate();
+}
+
+
+void CgPrjDlg::OnBnClickedBtnGetData()
+{
+	CImage& img = m_pDlgImage->m_image;
+
+	int nWidth = img.GetWidth();
+	int nHeight = img.GetHeight();
+	int nPitch = img.GetPitch();
+	unsigned char* fm = (unsigned char*)img.GetBits();
+
+	CRect rect(0, 0, nWidth, nHeight);
+	int nTh = 0x80;
+	int nSumX = 0;
+	int nSumY = 0;
+	int nCount = 0;
+	for (int j = rect.top; j < rect.bottom; j++) {
+		for (int i = rect.left; i < rect.right; i++) {
+			if (fm[j*nPitch + i] > nTh) {
+				nSumX += i;
+				nSumY += j;
+				nCount++;
+			}
+		}
+	}
+
+	double dbCenterX = (double)nSumX / nCount;
+	double dbCenterY = (double)nSumY / nCount;
+
+	cout << dbCenterX << "\t" << dbCenterY << endl;
 }
