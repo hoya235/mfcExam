@@ -17,6 +17,10 @@ private:
 	CDlgImage* m_pDlgImage;
 	CDlgImage* m_pDlgImgResult;
 
+
+public:
+	int ProcessImg(CRect rect);
+
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_GPRJ_DIALOG };
@@ -24,7 +28,6 @@ private:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
-
 
 // 구현입니다.
 protected:
@@ -46,4 +49,5 @@ public:
 	afx_msg void OnBnClickedBtnProcess();
 	afx_msg void OnBnClickedBtnMakePatten();
 	afx_msg void OnBnClickedBtnGetData();
+	afx_msg void OnBnClickedBtnThread();
 };

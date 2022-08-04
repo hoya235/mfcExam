@@ -34,3 +34,22 @@ int CProcess::getStartInfo(CImage& image, int th)
 
 	return nSum;
 }
+
+int CProcess::getStartInfo(CImage* pImage, int th, CRect rect)
+{
+	unsigned char* fm = (unsigned char*)pImage->GetBits();
+	int nWidth = pImage->GetWidth();
+	int nHeight = pImage->GetHeight();
+	int nPitch = pImage->GetPitch();
+
+	int nSum = 0;
+	int i, j;
+	for (j = rect.top; j < rect.bottom; j++) {
+		for (i = rect.left; i < rect.right; i++) {
+			if (fm[j*nPitch + i] > th) {
+				nSum++;
+			}
+		}
+	}
+	return nSum;
+}

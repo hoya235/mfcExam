@@ -9,6 +9,7 @@
 #include "Process.h"
 
 #include <chrono>
+#include <thread>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,6 +17,7 @@
 #endif
 
 using namespace std;
+using namespace chrono;
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -74,6 +76,7 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_PROCESS, &CgPrjDlg::OnBnClickedBtnProcess)
 	ON_BN_CLICKED(IDC_BTN_MAKE_PATTEN, &CgPrjDlg::OnBnClickedBtnMakePatten)
 	ON_BN_CLICKED(IDC_BTN_GET_DATA, &CgPrjDlg::OnBnClickedBtnGetData)
+	ON_BN_CLICKED(IDC_BTN_THREAD, &CgPrjDlg::OnBnClickedBtnThread)
 END_MESSAGE_MAP()
 
 
@@ -199,7 +202,7 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	for (int k = 0; k < MAX_POINT; k++) {
 		int x = rand() % nWidth;
 		int y = rand() % nHeight;
-		fm[y * nPitch + x] = rand()%255;
+		fm[y * nPitch + x] = rand()%0xff;
 	}
 
 	int index = 0;
@@ -207,7 +210,7 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	for (int j = 0; j < nHeight; j++) {
 		for (int i = 0; i < nWidth; i++) {
 			if (fm[j*nPitch + i] > nTh) {
-				if (index < MAX_POINT) {
+				if (m_pDlgImgResult->m_nDataCount < MAX_POINT) {
 					//cout << index << " " << i << ":" << j << endl;
 					m_pDlgImgResult->m_ptData[index].x = i;
 					m_pDlgImgResult->m_ptData[index].y = j;
@@ -226,10 +229,10 @@ void CgPrjDlg::OnBnClickedBtnProcess()
 {
 	CProcess ps;
 
-	auto start = chrono::system_clock::now();	
-	int ret = ps.getStartInfo(m_pDlgImage->m_image, 100);
-	auto end = chrono::system_clock::now();
-	auto msec = chrono::duration_cast<chrono::milliseconds>(end - start);
+	auto start = system_clock::now();	
+	int ret = ps.getStartInfo(m_pDlgImage->m_image, 0);
+	auto end = system_clock::now();
+	auto msec = duration_cast<chrono::milliseconds>(end - start);
 	cout << ret << "\t" << msec.count() << "ms" << endl;	
 }
 
@@ -284,4 +287,58 @@ void CgPrjDlg::OnBnClickedBtnGetData()
 	double dbCenterY = (double)nSumY / nCount;
 
 	cout << dbCenterX << "\t" << dbCenterY << endl;
+}
+
+void threadProcess(CWnd* pParent, CRect rect, int *nRet)
+{
+	CgPrjDlg* pWnd = (CgPrjDlg*)pParent;
+	*nRet = pWnd->ProcessImg(rect);
+}
+
+void CgPrjDlg::OnBnClickedBtnThread()
+{
+	auto start = system_clock::now();
+
+	int nImgSize = 4096 * 4;
+	CRect rect(0, 0, nImgSize, nImgSize);
+	CRect rt[4];
+	for (int k = 0; k < 4; k++)
+	{
+		rt[k] = rect;
+		rt[k].OffsetRect(nImgSize * (k % 2), nImgSize * int(k / 2));
+	}
+
+	int nRet[4] = { 0,0,0,0 };
+	thread _thread0(threadProcess, this, rt[0], &nRet[0]);
+	thread _thread1(threadProcess, this, rt[1], &nRet[1]);
+	thread _thread2(threadProcess, this, rt[2], &nRet[2]);
+	thread _thread3(threadProcess, this, rt[3], &nRet[3]);
+
+	_thread0.join();
+	_thread1.join();
+	_thread2.join();
+	_thread3.join();
+
+	int nSum = 0;
+	for (int i = 0; i < 4; i++)
+		nSum += nRet[i];
+	
+	auto end = system_clock::now();
+	auto msec = duration_cast<milliseconds>(end - start);
+	cout << "main: "<< nSum << "\t" << msec.count() << "ms" << endl;
+}
+
+int CgPrjDlg::ProcessImg(CRect rect)
+{
+	auto start = system_clock::now();
+	
+	CProcess ps;
+	
+	int nRet = ps.getStartInfo(&m_pDlgImage->m_image, 0, rect);
+
+	auto end = system_clock::now();
+	auto msec = duration_cast<milliseconds>(end - start);
+	cout << "thread: " << nRet << "\t" << msec.count() << "ms" << endl;
+
+	return nRet;
 }

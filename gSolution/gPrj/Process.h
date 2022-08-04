@@ -10,6 +10,7 @@ public:
 
 public:
 	int getStartInfo(CImage& image, int th = 100);
+	int getStartInfo(CImage* image, int th, CRect rect);
 };
 
 

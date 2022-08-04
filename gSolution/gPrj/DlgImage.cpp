@@ -38,8 +38,8 @@ END_MESSAGE_MAP()
 
 void  CDlgImage::InitImage()
 {
-	int nWidth = 4096 * 5; // 4k 라인스캐너 카메라가 5대 있다는 의미
-	int nHeight = 4096 * 5;
+	int nWidth = 4096 * 8; // 4k 라인스캐너 카메라가 8대 있다는 의미
+	int nHeight = 4096 * 8;
 	int nBpp = 8;
 
 	m_image.Create(nWidth, -nHeight, nBpp);
